@@ -1,3 +1,4 @@
+require "gosu"
 class Planet
 
   def initialize(x, y, xvel, yvel, mass, image)

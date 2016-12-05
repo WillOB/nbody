@@ -5,22 +5,22 @@ require "./planet"
 class NbodySimulation < Gosu::Window
 
 #  def create_planets
-    # simulation = File.open("simulations/planets.txt")
-    # planets = simulation.read.lines
-    # planets_ary = []
-    # planets.each do |line|
-    #   line.split(' ')
-    #   if line.length > 1
-    #     x = line[0]
-    #     y = line[1]
-    #     xvel = line[2]
-    #     yvel = line[3]
-    #     mass = line[4]
-    #     image = line[5]
-    #     planets_ary.push(Planet.new(x, y, xvel, yvel, mass, image))
-    #   end
-    # end
-  #  return planets_ary
+# simulation = open("simulations/planets.txt")
+# planets = simulation.read.lines
+# planets_ary = []
+# systemSize = planets[1].to_f
+# planets.each do |line|
+#   line = line.split(' ')
+#   if line.length > 1 && line[-1].include?(".png")
+#     x = 320 + line[0].to_f / systemSize * 320
+#     y = 320 + line[1].to_f / systemSize * 320
+#     xvel = line[2].to_f
+#     yvel = line[3].to_f
+#     mass = line[4].to_f
+#     image = line[5]
+#     planets_ary.push(Planet.new(x, y, xvel, yvel, mass, "images/" + image))
+#   end
+# end
   #end
 
   def initialize
@@ -33,7 +33,7 @@ class NbodySimulation < Gosu::Window
     systemSize = planets[1].to_f
     planets.each do |line|
       line = line.split(' ')
-      if line.length > 1
+      if line.length > 1 && line[-1].include?(".png")
         x = 320 + line[0].to_f / systemSize * 320
         y = 320 + line[1].to_f / systemSize * 320
         xvel = line[2].to_f
@@ -46,14 +46,22 @@ class NbodySimulation < Gosu::Window
     @planets_ary = planets_ary
   end
 
+  def force
+    G = 6.67259e-11
+    @planets_ary.each do |planet|
+      G * planet.mass
+    end
+  end
+
   def update
+
   end
 
   def draw
     @background_image.draw(0, 0, ZOrder::Background)
     @planets_ary.each do |planet|
       planet.draw
-    end
+  end
 
   end
 

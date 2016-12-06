@@ -1,6 +1,7 @@
 require "gosu"
 require_relative "z_order"
 require "./planet"
+G = 6.67259e-11
 
 class NbodySimulation < Gosu::Window
 
@@ -46,14 +47,32 @@ class NbodySimulation < Gosu::Window
     @planets_ary = planets_ary
   end
 
-  def force
-    G = 6.67259e-11
-    @planets_ary.each do |planet|
-      G * planet.mass
-    end
-  end
-
   def update
+    # @planets_ary.each do |planet|
+    #   planet.calculate_force
+    # end
+    n = @planets_ary.length
+    @planets_ary.each do |planet|
+      n.times do
+        num = 0
+        distancex = (planet.x - @planets_ary[num].x).abs
+        newFx = G * planet.mass * @planets_ary[num].mass / (distancex**2)
+        planet.forcex += newFx
+        distancey = (planet.y - @planets_ary[num].y).abs
+        newFy = G * planet.mass * @planets_ary[num].mass / (distancey**2)
+        planet.forcey += newFy
+        num += 1
+      end
+    end
+
+    @planets_ary.each do |planet|
+      planet.accx = planet.mass / planet.forcex
+      planet.accy = planet.mass / planet.forcey
+      planet.xvel += planet.accx * 25000
+      planet.yvel += planet.accy * 25000
+      planet.x += planet.xvel * 25000
+      planet.y += planet.yvel * 25000
+    end
 
   end
 
@@ -61,8 +80,7 @@ class NbodySimulation < Gosu::Window
     @background_image.draw(0, 0, ZOrder::Background)
     @planets_ary.each do |planet|
       planet.draw
-  end
-
+    end
   end
 
   def button_down(id)
@@ -73,5 +91,3 @@ end
 
 window = NbodySimulation.new
 window.show
-
-#to-do: redo arguments, create a method to read simulations, scale stuff

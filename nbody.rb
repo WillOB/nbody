@@ -29,49 +29,33 @@ class NbodySimulation < Gosu::Window
     self.caption = "NBody simulation"
     @background_image = Gosu::Image.new("images/space.jpg", tileable: true)
     simulation = open("simulations/planets.txt")
+
     planets = simulation.read.lines
-    planets_ary = []
-    systemSize = planets[1].to_f
+    @planets_ary = []
+    @systemSize = planets[1].to_f
+
     planets.each do |line|
       line = line.split(' ')
       if line.length > 1 && line[-1].include?(".png")
-        x = 320 + line[0].to_f / systemSize * 320
-        y = 320 + line[1].to_f / systemSize * 320
-        xvel = line[2].to_f
-        yvel = line[3].to_f
-        mass = line[4].to_f
-        image = line[5]
-        planets_ary.push(Planet.new(x, y, xvel, yvel, mass, "images/" + image))
+        x = 320 + line[0].to_f / @systemSize * 320
+        y = 320 + line[1].to_f / @systemSize * 320
+        @planets_ary.push(Planet.new(x, y, line[2], line[3], line[4], line[5]))
       end
     end
-    @planets_ary = planets_ary
   end
 
   def update
-    # @planets_ary.each do |planet|
-    #   planet.calculate_force
-    # end
     n = @planets_ary.length
     @planets_ary.each do |planet|
       n.times do
         num = 0
-        distancex = (planet.x - @planets_ary[num].x).abs
-        newFx = G * planet.mass * @planets_ary[num].mass / (distancex**2)
-        planet.forcex += newFx
-        distancey = (planet.y - @planets_ary[num].y).abs
-        newFy = G * planet.mass * @planets_ary[num].mass / (distancey**2)
-        planet.forcey += newFy
+        planet.calculate_force(@planets_ary[num])
         num += 1
       end
     end
 
     @planets_ary.each do |planet|
-      planet.accx = planet.mass / planet.forcex
-      planet.accy = planet.mass / planet.forcey
-      planet.xvel += planet.accx * 25000
-      planet.yvel += planet.accy * 25000
-      planet.x += planet.xvel * 25000
-      planet.y += planet.yvel * 25000
+      planet.move(@systemSize)
     end
 
   end

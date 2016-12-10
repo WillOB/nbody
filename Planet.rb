@@ -1,20 +1,23 @@
 require "gosu"
+G = 6.67259e-11
+
 
 class Planet
 
-  attr_accessor :x, :y, :mass
+  attr_accessor :x, :y, :mass, :image
 
   def initialize(x, y, xvel, yvel, mass, image)
-    @x = x
-    @y = y
+    @x = x.to_f
+    @y = y.to_f
     @xvel = xvel.to_f
     @yvel = yvel.to_f
     @mass = mass.to_f
     @image = Gosu::Image.new("images/" + image)
-    @forcex = 0
-    @forcey = 0
-    @accx = 0
-    @accy = 0
+    @forcex = @forcey = @accx = @accy = @xscaled = @yscaled = 0
+  end
+
+  def draw(systemSize)
+    @image.draw(@xscaled - image.width / 2, @yscaled - image.height / 2, ZOrder::Planet)
   end
 
   def calculate_force(otherPlanet)
@@ -29,12 +32,12 @@ class Planet
     @accy = @forcey / @mass
     @xvel += @accx * 25000
     @yvel += @accy * 25000
-    @x += @xvel * 25000 / systemSize * 320 #look at these lines
-    @y += @yvel * 25000 / systemSize * 320
+    @x += @xvel * 25000
+    @y += @yvel * 25000
+    @xscaled = @x / systemSize * 320 + 320
+    @yscaled = @y / systemSize * 320 + 320
   end
 
-  def draw
-    @image.draw(@x.to_f, @y.to_f, ZOrder::Planet)
-  end
+
 
 end

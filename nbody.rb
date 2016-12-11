@@ -5,35 +5,19 @@ require "./planet"
 
 class NbodySimulation < Gosu::Window
 
-#  def create_planets
-# simulation = open("simulations/planets.txt")
-# planets = simulation.read.lines
-# planets_ary = []
-# systemSize = planets[1].to_f
-# planets.each do |line|
-#   line = line.split(' ')
-#   if line.length > 1 && line[-1].include?(".png")
-#     x = 320 + line[0].to_f / systemSize * 320
-#     y = 320 + line[1].to_f / systemSize * 320
-#     xvel = line[2].to_f
-#     yvel = line[3].to_f
-#     mass = line[4].to_f
-#     image = line[5]
-#     planets_ary.push(Planet.new(x, y, xvel, yvel, mass, "images/" + image))
-#   end
-# end
-  #end
-
-  def initialize
+  def initialize(simulation)
     super(640, 640, false)
     self.caption = "NBody simulation"
     @background_image = Gosu::Image.new("images/space.jpg", tileable: true)
-    simulation = open("simulations/planets.txt")
+    simulation = open(simulation)
 
     planets = simulation.read.lines
     @planets_ary = []
     @systemSize = planets[1].to_f
-    
+    create_planets(planets)
+  end
+
+  def create_planets(planets)
     planets.each do |line|
       line = line.split(' ')
       if line.length > 1 && line[-1].include?(".png")
@@ -49,7 +33,6 @@ class NbodySimulation < Gosu::Window
         if planet.image != otherPlanet.image
           planet.calculate_force(otherPlanet)
         end
-
       end
 
       planet.move(@systemSize)
@@ -60,7 +43,7 @@ class NbodySimulation < Gosu::Window
   def draw
     @background_image.draw(0, 0, ZOrder::Background)
     @planets_ary.each do |planet|
-      planet.draw(@systemSize)
+      planet.draw
     end
   end
 
@@ -70,5 +53,11 @@ class NbodySimulation < Gosu::Window
 
 end
 
-window = NbodySimulation.new
+if ARGV.length == 0
+  simulation = "simulations/planets.txt"
+else
+  simulation = "simulations/" + ARGV[0].to_s
+end
+
+window = NbodySimulation.new(simulation)
 window.show
